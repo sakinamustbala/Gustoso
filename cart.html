@@ -1,0 +1,25 @@
+<h1>Your Cart</h1>
+<div id="cart-items"></div>
+
+<script>
+    async function loadCart() {
+        const response = await fetch('/get-cart');
+        const cartItems = await response.json();
+
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = '';
+
+        cartItems.forEach(item => {
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <h2>${item.name}</h2>
+                    <p>Quantity: ${item.quantity}</p>
+                    <p>Price: $${item.price}</p>
+                    <button onclick="removeFromCart(${item.item_id})">Remove</button>
+                </div>
+            `;
+        });
+    }
+
+    loadCart();
+</script>
