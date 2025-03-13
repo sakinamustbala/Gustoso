@@ -21,6 +21,21 @@ body {
   align-items: center;
   justify-content: center;
 }
+/* Typing Animation */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
 /* Navbar */
 .navbar {
   position: absolute;
@@ -33,6 +48,13 @@ body {
 .logo {
   font-size: 24px;
   font-weight: bold;
+  color: white;
+  overflow: hidden; /* Hide overflow to create the typing effect */
+  white-space: nowrap; /* Keep text in a single line */
+  border-right: 0px solid #ff69b4; /* Cursor effect */
+  width: 0;
+  animation:typing 4s infinite, /* 7 steps for 7 letters */
+  cursor 5s step-end infinite;
 }
 .nav-links {
   list-style: none;
@@ -45,6 +67,7 @@ body {
   color: white;
   text-decoration: none;
   font-size: 16px;
+  cursor: pointer;
 }
 .nav-links a:hover {
   text-decoration: underline;
@@ -54,9 +77,16 @@ body {
   text-align: center;
 }
 .hero-content h1 {
-  font-size: 64px;
+  font-size: 74px;
   font-weight: bold;
   margin-bottom: 10px;
+  overflow: hidden; /* Hide overflow to create the typing effect */
+  white-space: nowrap; /* Keep text in a single line */
+  border-right: 0px solid #ff69b4; /* Cursor effect */
+  display: inline-block;
+  width: 0;
+  animation:typing 4s infinite, /* 7 steps for 7 letters */
+  cursor 5s step-end infinite;
 }
 .hero-content p {
   font-size: 24px;
@@ -102,6 +132,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 30px;
+  align-items: stretch;
   flex-wrap: wrap;
 }
 .info-card {
@@ -241,6 +272,7 @@ body {
   padding: 80px 20px;
   background-color: #f9f5f7;
   text-align: center;
+  align-items: stretch;
 }
 .testimonials-container {
   max-width: 1200px;
