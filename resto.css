@@ -49,12 +49,6 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: white;
-  overflow: hidden; /* Hide overflow to create the typing effect */
-  white-space: nowrap; /* Keep text in a single line */
-  border-right: 0px solid #ff69b4; /* Cursor effect */
-  width: 0;
-  animation:typing 4s infinite, /* 7 steps for 7 letters */
-  cursor 5s step-end infinite;
 }
 .nav-links {
   list-style: none;
