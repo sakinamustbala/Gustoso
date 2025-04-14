@@ -150,7 +150,81 @@
     </div>
 
     <script>
-        // ... existing script ...
+        document.addEventListener('DOMContentLoaded', () => {
+            const reservationForm = document.getElementById('reservationForm');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+
+            if (token && userId) {
+                // Pre-fill user information if logged in
+                document.getElementById('name').value = localStorage.getItem('userName') || '';
+                document.getElementById('email').value = localStorage.getItem('userEmail') || '';
+                document.getElementById('phone').value = localStorage.getItem('userPhone') || '';
+            }
+
+            reservationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Check if user is logged in
+                if (!token || !userId) {
+                    errorMessage.textContent = 'Please login to make a reservation';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 3000);
+                    return;
+                }
+
+                const reservationData = {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    date: document.getElementById('date').value,
+                    time: document.getElementById('time').value,
+                    guests: document.getElementById('guests').value,
+                    userId: userId
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8080/api/reservations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-auth-token': token
+                        },
+                        body: JSON.stringify(reservationData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        successMessage.textContent = 'Reservation made successfully!';
+                        successMessage.style.display = 'block';
+                        reservationForm.reset();
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    } else {
+                        errorMessage.textContent = data.error || 'Failed to make reservation';
+                        errorMessage.style.display = 'block';
+                        setTimeout(() => {
+                            errorMessage.style.display = 'none';
+                        }, 3000);
+                    }
+                } catch (error) {
+                    console.error('Reservation error:', error);
+                    errorMessage.textContent = 'Failed to make reservation. Please try again.';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 3000);
+                }
+            });
+        });
     </script>
 </body>
 </html> 
