@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gustoso Menu</title>
+  <link rel="stylesheet" href="resto.css" />
+  <link rel="stylesheet" href="menu.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Cart Sidebar Styling */
+    .cart-sidebar {
+      position: fixed;
+      right: -320px;
+      top: 0;
+      width: 320px;
+      height: 100%;
+      background-color: #f9f9f9;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .cart-sidebar.open {
+      right: 0;
+    }
+
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .cart-total {
+      margin-top: 15px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff4d88;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+
+    .cart-icon {
+      font-size: 1.5rem;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: #ff4d88;
+      color: white;
+      font-size: 0.8rem;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .add-to-cart-btn {
+      background-color: #ff4d88;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .add-to-cart-btn:hover {
+      background-color: #ff4d88;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .auth-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn {
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .register-btn {
+      background: var(--primary-color);
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .auth-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-color);
+    }
+
+    .user-info span {
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #cc0000;
+    }
+
+    /* Sticky Header Styling */
+    .menu-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 5%;
+      background: white;
+    }
+
+    .menu-intro {
+      text-align: center;
+      padding: 20px 10%;
+      background: linear-gradient(to bottom, rgba(255, 20, 147, 0.6) 0%, rgba(255, 182, 193, 0) 70%);
+    }
+
+    .menu-intro h1 {
+      font-size: 2rem;
+      margin-bottom: 5px;
+      color: #ff4d88;
+    }
+
+    .menu-intro p {
+      font-size: 1rem;
+      color: #ff4d88;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="menu-header">
+  <div class="navbar">
+    <div class="logo">
+      <a href="index.html" style="text-decoration: none; color: inherit;">Gustoso</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#pasta">Pasta</a></li>
+      <li><a href="#pizza">Pizza</a></li>
+      <li><a href="#desserts">Desserts</a></li>
+      <li><a href="#beverages">Beverages</a></li>
+    </ul>
+    <div class="cart-icon" onclick="toggleCart()">
+      <i class="fas fa-shopping-cart"></i>
+      <span id="cart-count" class="cart-count">0</span>
+    </div>
+    <div class="auth-buttons" id="authButtons">
+      <!-- This will be populated by JavaScript -->
+    </div>
+  </div>
+</header>
+
+<!-- Menu Intro -->
+<section class="menu-intro">
+  <h1>Our Menu</h1>
+  <p>Authentic Italian flavors crafted with love and care.</p>
+</section>
+
+<!-- Pasta Section -->
+<section id="pasta" class="menu-section">
+  <h2>Pasta</h2>
+  <div class="menu-items">
+    <div class="menu-card">
+      <img src="https://www.giallozafferano.com/images/224-22436/Spaghetti-Carbonara_650x433_wm.jpg" alt="Spaghetti Carbonara">
+      <div class="menu-info">
+        <h3>Spaghetti Carbonara</h3>
+        <p>Classic Roman pasta with eggs, cheese, pancetta, and black pepper.</p>
+        <span class="price">₹650</span>
+        <button class="add-to-cart-btn" onclick="addToCart('Spaghetti Carbonara', 650,'https://www.giallozafferano.com/images/224-22436/Spaghetti-Carbonara_650x433_wm.jpg')">Add to Cart</button>
+      </div>
+    </div>
+
+    <div class="menu-card">
+        <img src="https://images.immediate.co.uk/production/volatile/sites/2/2023/03/Seafood-linguine-b70ceb5.jpg?resize=768,574" alt="Seafood Linguine">
+        <div class="menu-info">
+          <h3>Seafood Linguine</h3>
+          <p>Linguine tossed with prawns, calamari, and a white wine garlic sauce.</p>
+          <span class="price">₹750</span>
+          <button class="add-to-cart-btn" onclick="addToCart('Seafood Linguine', 750,'https://images.immediate.co.uk/production/volatile/sites/2/2023/03/Seafood-linguine-b70ceb5.jpg?resize=768,574')">Add to Cart</button>
+    </div>
+</div>
+        <div class="menu-card">
+            <img src="https://kitchenswagger.com/wp-content/uploads/2023/07/pesto-shrimp-pasta-4.jpg" alt="Pesto Pasta">
+            <div class="menu-info">
+            <h3>Pesto Pasta</h3>
+            <p>Homemade basil pesto with pine nuts and parmesan.</p>
+            <span class="price">₹600</span>
+        <button class="add-to-cart-btn" onclick="addToCart('Pesto Pasta', 600,'https://kitchenswagger.com/wp-content/uploads/2023/07/pesto-shrimp-pasta-4.jpg')">Add to Cart</button>
+    </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pizza Section -->
+<section id="pizza" class="menu-section">
+  <h2>Pizza</h2>
+  <div class="menu-items">
+    <div class="menu-card">
+      <img src="https://cdn.loveandlemons.com/wp-content/uploads/2023/07/margherita-pizza-recipe.jpg" alt="Margherita Pizza">
+      <div class="menu-info">
+        <h3>Margherita Pizza</h3>
+        <p>Tomato, fresh mozzarella, and basil.</p>
+        <span class="price">₹500</span>
+        <button class="add-to-cart-btn" onclick="addToCart('Margherita Pizza', 500,'https://cdn.loveandlemons.com/wp-content/uploads/2023/07/margherita-pizza-recipe.jpg')">Add to Cart</button>
+      </div>
+    </div>
+    <div class="menu-card">
+        <img src="https://atsloanestable.com/wp-content/uploads/2023/06/new-york-style-pizza2.jpg" alt="Pepperoni Pizza">
+        <div class="menu-info">
+        <h3>Pepperoni Pizza</h3>
+        <p>Tomato sauce, mozzarella, and spicy pepperoni.</p>
+        <span class="price">₹700</span>
+        <button class="add-to-cart-btn" onclick="addToCart('Pepperoni Pizza', 700,'https://atsloanestable.com/wp-content/uploads/2023/06/new-york-style-pizza2.jpg')">Add to Cart</button>
+        </div>
+      </div>
+      <div class="menu-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtTrAz4GVFKDwAtFIU62HOzDc0O7hE-OunTQ&s" alt="Prosciutto Pizza">
+        <div class="menu-info">
+          <h3>Prosciutto Pizza</h3>
+          <p>Thin crust pizza topped with prosciutto, arugula, and parmesan.</p>
+          <span class="price">₹750</span>
+          <button class="add-to-cart-btn" onclick="addToCart('Prosciutto Pizza', 750,'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtTrAz4GVFKDwAtFIU62HOzDc0O7hE-OunTQ&s')">Add to Cart</button>
+        </div>
+      </div>
+  </div>
+</section>
+
+<!-- Desserts Section -->
+<section id="desserts" class="menu-section">
+    <h2>Desserts</h2>
+    <div class="menu-items">
+      <div class="menu-card">
+        <img src="https://liliebakery.fr/wp-content/uploads/2024/09/recette-tiramisu-sans-oeuf-facile-lilie-bakery.jpg" alt="Tiramisu">
+        <div class="menu-info">
+          <h3>Tiramisu</h3>
+          <p>Classic Italian dessert with layers of coffee-soaked ladyfingers and mascarpone cream.</p>
+          <span class="price">₹400</span>
+          <button class="add-to-cart-btn" onclick="addToCart('Tiramisu', 400,'https://liliebakery.fr/wp-content/uploads/2024/09/recette-tiramisu-sans-oeuf-facile-lilie-bakery.jpg')">Add to Cart</button>
+        </div>
+      </div>
+    <div class="menu-card">
+        <img src="https://emmaduckworthbakes.com/wp-content/uploads/2023/06/Chocolate-Gelato-Recipe.jpg" alt="Gelato">
+        <div class="menu-info">
+          <h3>Gelato</h3>
+          <p>Authentic Italian ice cream available in various flavors.</p>
+          <span class="price">₹300</span>
+          <button class="add-to-cart-btn" onclick="addToCart('Tiramisu', 300,'https://emmaduckworthbakes.com/wp-content/uploads/2023/06/Chocolate-Gelato-Recipe.jpg')">Add to Cart</button>
+        </div>
+      </div>
+  </div>
+</section>
+
+<!-- Beverages Section -->
+<section id="beverages" class="menu-section">
+    <h2>Beverages</h2>
+    <div class="menu-items">
+      <div class="menu-card">
+        <img src="https://www.cookclickndevour.com/wp-content/uploads/2017/11/espresso-coffee-recipe-a.jpg" alt="Espresso">
+        <div class="menu-info">
+          <h3>Espresso</h3>
+          <p>Rich and strong Italian coffee shot.</p>
+          <span class="price">₹150</span>
+        <button class="add-to-cart-btn" onclick="addToCart('Espresso', 150, 'https://www.cookclickndevour.com/wp-content/uploads/2017/11/espresso-coffee-recipe-a.jpg')">Add to Cart</button>
+      </div>
+    </div>
+    <div class="menu-card">
+        <img src="https://www.allrecipes.com/thmb/8phuC-bVeBCob5yx4rBKM7ajBsw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/21667-easy-iced-coffee-ddmfs-2x1-0091-18b743db97f5495e9e152b034e211b4c.jpg" alt="Iced Coffee">
+        <div class="menu-info">
+          <h3>Iced Coffee</h3>
+          <p>Chilled coffee with a hint of cream and sugar.</p>
+          <span class="price">₹200</span>
+          <button class="add-to-cart-btn" onclick="addToCart('Iced coffee', 200,'https://www.allrecipes.com/thmb/8phuC-bVeBCob5yx4rBKM7ajBsw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/21667-easy-iced-coffee-ddmfs-2x1-0091-18b743db97f5495e9e152b034e211b4c.jpg')">Add to Cart</button>
+        </div>
+        </div>
+      </div>
+  </div>
+</section>
+
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <span>Your Cart</span>
+    <span onclick="toggleCart()">✕</span>
+  </div>
+  <div id="cart-items"></div>
+  <div class="cart-total">
+    Total: ₹<span id="cart-total">0</span>
+  </div>
+  <button class="checkout-btn">Checkout</button>
+</div>
+
+<script>
+  // Cart functionality
+  let cart = [];
+  let cartTotal = 0;
+
+  // Load cart from localStorage when page loads
+  function loadCart() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      cart = [];
+      updateCart();
+      updateCartCount();
+      return;
+    }
+    const savedCart = localStorage.getItem(`cart_${userId}`);
+    if (savedCart) {
+      cart = JSON.parse(savedCart);
+      updateCart();
+      updateCartCount();
+    }
+  }
+
+  // Save cart to localStorage
+  function saveCart() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      return;
+    }
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+  }
+
+  // Clear cart from localStorage
+  function clearCart() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      localStorage.removeItem(`cart_${userId}`);
+    }
+    cart = [];
+    updateCart();
+    updateCartCount();
+  }
+
+  function toggleCart() {
+    const cartSidebar = document.getElementById('cart-sidebar');
+    cartSidebar.classList.toggle('open');
+  }
+
+  function addToCart(name, price, image) {
+    // Check if item already exists in cart
+    const existingItem = cart.find(item => item.name === name);
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({
+        name: name,
+        price: price,
+        image: image,
+        quantity: 1
+      });
+    }
+
+    updateCart();
+    updateCartCount();
+    saveCart(); // Save cart after adding item
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+    updateCartCount();
+    saveCart(); // Save cart after removing item
+  }
+
+  function updateCart() {
+    const cartItems = document.getElementById('cart-items');
+    const cartTotalElement = document.getElementById('cart-total');
+    
+    // Clear existing items
+    cartItems.innerHTML = '';
+    cartTotal = 0;
+
+    // Add items to cart
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      cartTotal += itemTotal;
+
+      const cartItemElement = document.createElement('div');
+      cartItemElement.className = 'cart-item';
+      cartItemElement.innerHTML = `
+        <div>
+          <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+          <span>${item.name} x${item.quantity}</span>
+        </div>
+        <div>
+          <span>₹${itemTotal}</span>
+          <button onclick="removeFromCart(${index})" style="margin-left: 10px; background: none; border: none; color: #ff4d88; cursor: pointer;">✕</button>
+        </div>
+      `;
+      cartItems.appendChild(cartItemElement);
+    });
+
+    // Update total
+    cartTotalElement.textContent = cartTotal;
+  }
+
+  function updateCartCount() {
+    const cartCount = document.getElementById('cart-count');
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCount.textContent = totalItems;
+  }
+
+  // Function to handle checkout
+  async function handleCheckout(customerData) {
+    try {
+      const token = localStorage.getItem('token');
+      const userId = localStorage.getItem('userId');
+      
+      if (!token || !userId) {
+        alert('Please login to place an order');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const response = await fetch('http://localhost:8080/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token
+        },
+        body: JSON.stringify({
+          items: cart,
+          totalAmount: cartTotal,
+          customerName: customerData.name,
+          customerEmail: customerData.email,
+          customerPhone: customerData.phone,
+          userId: userId
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        alert('Order placed successfully!');
+        clearCart();
+        toggleCart();
+      } else {
+        alert(data.error || 'Failed to place order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to place order. Please try again.');
+    }
+  }
+
+  // Load cart when page loads
+  document.addEventListener('DOMContentLoaded', loadCart);
+
+  // Modify the checkout button click handler
+  document.querySelector('.checkout-btn').addEventListener('click', () => {
+    if (cart.length === 0) {
+      alert('Your cart is empty!');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (!token || !userId) {
+      alert('Please login to place an order');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Create a form to collect customer information
+    const customerForm = `
+      <div style="padding: 20px;">
+        <h3>Complete Your Order</h3>
+        <form id="checkout-form">
+          <div style="margin-bottom: 10px;">
+            <label>Name:</label>
+            <input type="text" id="customer-name" required>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <label>Email:</label>
+            <input type="email" id="customer-email" required>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <label>Phone:</label>
+            <input type="tel" id="customer-phone" required>
+          </div>
+          <button type="submit">Place Order</button>
+        </form>
+      </div>
+    `;
+
+    const checkoutDiv = document.createElement('div');
+    checkoutDiv.innerHTML = customerForm;
+    document.getElementById('cart-items').appendChild(checkoutDiv);
+
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const customerData = {
+        name: document.getElementById('customer-name').value,
+        email: document.getElementById('customer-email').value,
+        phone: document.getElementById('customer-phone').value
+      };
+      await handleCheckout(customerData);
+    });
+  });
+
+  // Check if user is logged in
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+  const authButtons = document.getElementById('authButtons');
+
+  if (token && userId) {
+    // User is logged in
+    authButtons.innerHTML = `
+      <div class="user-info">
+        <span>Welcome, ${localStorage.getItem('userName') || 'User'}</span>
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+      </div>
+    `;
+  } else {
+    // User is not logged in
+    authButtons.innerHTML = `
+      <a href="login.html" class="auth-btn login-btn">Login</a>
+      <a href="register.html" class="auth-btn register-btn">Register</a>
+    `;
+  }
+
+  function handleLogout() {
+    clearCart(); // Clear the user's cart
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userPhone');
+    window.location.href = 'menu.html';
+  }
+</script>
+
+</body>
+</html>
